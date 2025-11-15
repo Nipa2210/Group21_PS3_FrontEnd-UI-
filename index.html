@@ -1,678 +1,936 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Smart E-Learning — Single File (Landing + 8 Role Dashboards)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartLearning.edu - Role-Based E-Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-  :root{
-    --bg1:#071028; --bg2:#0b2540; --accent1:#7c3aed; --accent2:#06b6d4;
-    --card:#ffffff; --muted:#94a3b8;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0b1220}
-  body{background:linear-gradient(180deg,var(--bg1),var(--bg2));padding:20px; -webkit-font-smoothing:antialiased;}
+        /* Background Animation */
+        .bg-circle {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            background: white;
+            animation: float 20s infinite ease-in-out;
+            z-index: 0;
+        }
 
-  /* ---------- Landing ---------- */
-  .container { max-width:1200px; margin:0 auto; }
-  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 10px; color:#fff; }
-  .brand { display:flex; gap:12px; align-items:center; font-weight:800; }
-  .logo { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent1),var(--accent2)); color:#fff; font-weight:800; box-shadow:0 8px 24px rgba(124,58,237,0.18) }
-  .topnav { display:flex; gap:12px; align-items:center; }
-  .nav-link { color:rgba(255,255,255,0.9); text-decoration:none; font-weight:600; cursor:pointer; }
-  .btn-cta { padding:10px 14px; border-radius:10px; border:0; cursor:pointer; color:#fff; background:linear-gradient(90deg,var(--accent1),var(--accent2)); font-weight:700; }
+        .bg-circle:nth-child(1) { width: 300px; height: 300px; top: 10%; left: 10%; }
+        .bg-circle:nth-child(2) { width: 200px; height: 200px; top: 60%; right: 15%; animation-delay: 5s; }
+        .bg-circle:nth-child(3) { width: 150px; height: 150px; bottom: 10%; left: 50%; animation-delay: 10s; }
 
-  .hero { display:grid; grid-template-columns: 1fr 460px; gap:24px; align-items:center; padding:26px; border-radius:14px; margin-top:16px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 18px 50px rgba(2,6,23,0.5); color:#fff; }
-  .hero h1{ margin:0; font-size:32px; line-height:1.05; }
-  .hero p{ color: rgba(255,255,255,0.85); max-width:58ch; }
-  .cta-row { display:flex; gap:12px; margin-top:16px; }
-  .small-stats { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
-  .stat { background: rgba(255,255,255,0.04); padding:10px 14px; border-radius:12px; font-weight:700; }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(30px, -30px); }
+            66% { transform: translate(-20px, 20px); }
+        }
 
-  .cards { display:flex; gap:12px; margin-top:18px; flex-wrap:wrap; }
-  .mini { min-width:120px; padding:12px 14px; border-radius:12px; color:#fff; font-weight:700 }
-  .mini-1{ background:linear-gradient(90deg,#ff7ab6,#ffb86b) }
-  .mini-2{ background:linear-gradient(90deg,#7c3aed,#06b6d4) }
-  .mini-3{ background:linear-gradient(90deg,#06b6d4,#60a5fa) }
-  .mini-4{ background:linear-gradient(90deg,#f59e0b,#ef4444) }
+        /* Login Page */
+        #loginPage {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
 
-  .hero-visual { display:flex; align-items:center; justify-content:center; }
-  .visual-card { width:100%; max-width:420px; border-radius:12px; overflow:hidden; box-shadow:0 24px 60px rgba(2,6,23,0.6); background:#0b1220; padding:18px; }
-  .visual-card img{ width:100%; height:auto; display:block; border-radius:8px; }
+        #loginPage.hidden {
+            display: none !important;
+        }
 
-  /* ---------- App shell ---------- */
-  .app { margin-top:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02)); border-radius:12px; overflow:hidden; box-shadow:0 12px 36px rgba(2,6,23,0.55); }
-  .app .header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:linear-gradient(90deg,#071028,#0b2540); color:#fff; }
-  .role-pill { background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; }
-  .main { display:flex; gap:18px; padding:18px; }
-  .sidebar { width:220px; min-width:160px; padding:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:10px; color:#e6eefc; }
-  .nav-list { display:flex; flex-direction:column; gap:8px; }
-  .nav-item { padding:8px 10px; border-radius:8px; cursor:pointer; color:#cbd5e1; }
-  .nav-item.active { background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; box-shadow:0 6px 18px rgba(124,58,237,0.12); }
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+        }
 
-  .content { flex:1; }
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
 
-  /* cards/tables */
-  .dashboard-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:14px; }
-  .card { background:#fff; border-radius:12px; padding:14px; box-shadow:0 8px 22px rgba(2,6,23,0.06); }
-  .card .title{ font-weight:700; color:#0b1220; margin-bottom:8px; }
-  .metric{ font-weight:800; font-size:28px; }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-  .table-wrap{ overflow:auto; margin-top:12px; border-radius:8px }
-  table{ width:100%; border-collapse:collapse; min-width:500px; }
-  thead th{ text-align:left; padding:10px 12px; background:#f8fafc; color:#374151; font-weight:700 }
-  tbody td{ padding:10px 12px; border-bottom:1px solid #f3f4f6; color:#334155; }
+        .login-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
 
-  .action-btn{ padding:6px 10px; border-radius:8px; cursor:pointer; border:0; font-weight:700; }
-  .action-approve{ background:linear-gradient(90deg,#10b981,#06b6d4); color:#fff; }
-  .action-reject{ background:linear-gradient(90deg,#ef4444,#fb923c); color:#fff; }
-  .action-edit{ background:#eef2ff; color:#4f46e5; }
+        .login-header p {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
 
-  input.search{ padding:8px 12px; border-radius:8px; border:1px solid #e6edf3; width:100%; }
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-  /* responsive */
-  @media (max-width:1100px){
-    .hero { grid-template-columns: 1fr; }
-    .hero-visual{ order:-1 }
-    .main{ flex-direction:column }
-    .sidebar{ width:100% }
-    table{ min-width:0 }
-  }
-</style>
+        .role-card {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .role-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .role-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .role-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .role-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1a202c;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1a202c;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* App Container */
+        #appContainer {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        #appContainer.show {
+            display: block !important;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-user-info {
+            text-align: right;
+        }
+
+        .nav-user-name {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .nav-user-role {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+
+        .nav-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            border-color: #f56565;
+            color: #f56565;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none !important;
+        }
+
+        .dashboard-section.active {
+            display: block !important;
+        }
+
+        .welcome-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-header p {
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #667eea, #4299e1); }
+        .stat-icon.green { background: linear-gradient(135deg, #48bb78, #38a169); }
+        .stat-icon.purple { background: linear-gradient(135deg, #9f7aea, #764ba2); }
+        .stat-icon.orange { background: linear-gradient(135deg, #ed8936, #dd6b20); }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-info p {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 1.5rem;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        /* Table */
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        th {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1a202c;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #c6f6d5; color: #22543d; }
+        .badge-warning { background: #feebc8; color: #7c2d12; }
+        .badge-info { background: #bee3f8; color: #2c5282; }
+
+        @media (max-width: 768px) {
+            .role-cards { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .charts-container { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
 
-  <div class="container">
+    <!-- Login Page -->
+    <div id="loginPage">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>Welcome to SmartLearning.edu</h1>
+                <p>Sign in to access your dashboard</p>
+            </div>
 
-    <!-- Topbar + Landing -->
-    <div class="topbar">
-      <div class="brand"><div class="logo">EL</div><div>Smart E-Learning</div></div>
-      <div class="topnav">
-        <div class="nav-link" onclick="document.getElementById('app-shell').scrollIntoView({behavior:'smooth'})">Dashboard</div>
-        <div class="nav-link" onclick="document.getElementById('featuresSec').scrollIntoView({behavior:'smooth'})">Features</div>
-        <button class="btn-cta" id="tryDemoTopBtn">Try Demo</button>
-      </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Select Your Role</label>
+                    <div class="role-cards">
+                        <div class="role-card" data-role="student">
+                            <i class="fas fa-user-graduate"></i>
+                            <div class="role-name">Student</div>
+                        </div>
+                        <div class="role-card" data-role="instructor">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <div class="role-name">Instructor</div>
+                        </div>
+                        <div class="role-card" data-role="admin">
+                            <i class="fas fa-user-shield"></i>
+                            <div class="role-name">Admin</div>
+                        </div>
+                        <div class="role-card" data-role="course_team">
+                            <i class="fas fa-users-cog"></i>
+                            <div class="role-name">Course Team</div>
+                        </div>
+                        <div class="role-card" data-role="dept_head">
+                            <i class="fas fa-user-tie"></i>
+                            <div class="role-name">Dept Head</div>
+                        </div>
+                        <div class="role-card" data-role="data_analyst">
+                            <i class="fas fa-chart-line"></i>
+                            <div class="role-name">Data Analyst</div>
+                        </div>
+                        <div class="role-card" data-role="office_manager">
+                            <i class="fas fa-briefcase"></i>
+                            <div class="role-name">Office Manager</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="e.g., student@demo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: #718096;">
+                    Demo: student@demo / demo, admin@demo / demo, etc.
+                </div>
+            </form>
+        </div>
     </div>
 
-    <section class="hero" aria-label="Hero">
-      <div>
-        <div class="kicker muted-ghost">E-Online.</div>
-        <h1>Investing in <span style="background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text; color:transparent">Knowledge</span> and Your Future</h1>
-        <p>Smart E-Learning Management System with role-based dashboards, AI-driven analytics, course management, content and assessment features. Try the demo and sign in with a role to explore.</p>
+    <!-- App Container -->
+    <div id="appContainer">
+        <nav class="top-nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>SmartLearning.edu</span>
+                </div>
+                <div class="nav-user">
+                    <div class="nav-user-info">
+                        <div class="nav-user-name" id="userName">User</div>
+                        <div class="nav-user-role" id="userRole">Role</div>
+                    </div>
+                    <div class="nav-avatar" id="userAvatar">U</div>
+                    <button class="btn-logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
 
-        <div class="cta-row">
-          <button class="btn-cta" id="getStartedBtn">Get Started</button>
-          <button class="btn-cta" id="tourBtn" style="background:transparent; border:1px solid rgba(255,255,255,0.12)">Live Tour</button>
+        <div class="main-container">
+            <!-- Student Dashboard -->
+            <div id="studentDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>👨‍🎓 Student Dashboard</h1>
+                    <p>Track your learning progress and courses</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+                        <div class="stat-info"><h3>8</h3><p>Enrolled Courses</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info"><h3>5</h3><p>Completed</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-certificate"></i></div>
+                        <div class="stat-info"><h3>5</h3><p>Certificates</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-trophy"></i></div>
+                        <div class="stat-info"><h3>78%</h3><p>Avg. Score</p></div>
+                    </div>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>📊 Course Progress</h3>
+                        <canvas id="studentChart1"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>📈 Performance</h3>
+                        <canvas id="studentChart2"></canvas>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Course</th><th>Instructor</th><th>Progress</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Web Development</td><td>Jane Smith</td><td>75%</td><td><span class="badge badge-warning">In Progress</span></td></tr>
+                            <tr><td>Python Basics</td><td>Dr. Johnson</td><td>100%</td><td><span class="badge badge-success">Completed</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Instructor Dashboard -->
+            <div id="instructorDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>👩‍🏫 Instructor Dashboard</h1>
+                    <p>Manage courses and students</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-book-open"></i></div>
+                        <div class="stat-info"><h3>12</h3><p>Active Courses</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h3>385</h3><p>Total Students</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-star"></i></div>
+                        <div class="stat-info"><h3>4.8</h3><p>Avg. Rating</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-chart-bar"></i></div>
+                        <div class="stat-info"><h3>92%</h3><p>Completion</p></div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Course</th><th>Category</th><th>Enrolled</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Web Development</td><td><span class="badge badge-info">Development</span></td><td>245</td><td><span class="badge badge-success">Active</span></td></tr>
+                            <tr><td>Advanced JavaScript</td><td><span class="badge badge-info">Development</span></td><td>140</td><td><span class="badge badge-success">Active</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>🛡️ Admin Dashboard</h1>
+                    <p>Platform management and analytics</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h3>2,547</h3><p>Total Users</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-book"></i></div>
+                        <div class="stat-info"><h3>186</h3><p>Courses</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info"><h3>5,432</h3><p>Enrollments</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-certificate"></i></div>
+                        <div class="stat-info"><h3>1,289</h3><p>Certificates</p></div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>John Doe</td><td>john@email.com</td><td><span class="badge badge-info">Student</span></td><td><span class="badge badge-success">Active</span></td></tr>
+                            <tr><td>Jane Smith</td><td>jane@email.com</td><td><span class="badge badge-warning">Instructor</span></td><td><span class="badge badge-success">Active</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Course Team Dashboard -->
+            <div id="course_teamDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>📚 Course Team Dashboard</h1>
+                    <p>Review and approve courses</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info"><h3>24</h3><p>Pending</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-check"></i></div>
+                        <div class="stat-info"><h3>186</h3><p>Approved</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-eye"></i></div>
+                        <div class="stat-info"><h3>12</h3><p>Under Review</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-times"></i></div>
+                        <div class="stat-info"><h3>8</h3><p>Rejected</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dept Head Dashboard -->
+            <div id="dept_headDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>🏛️ Department Head Dashboard</h1>
+                    <p>Monitor KPIs and faculty</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="stat-info"><h3>24</h3><p>Faculty</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-project-diagram"></i></div>
+                        <div class="stat-info"><h3>7</h3><p>Projects</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info"><h3>$285K</h3><p>Budget</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-chart-pie"></i></div>
+                        <div class="stat-info"><h3>68%</h3><p>Used</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Analyst Dashboard -->
+            <div id="data_analystDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>📊 Data Analyst Dashboard</h1>
+                    <p>Analytics and AI insights</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-info"><h3>2,430</h3><p>Active Learners</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-percentage"></i></div>
+                        <div class="stat-info"><h3>72%</h3><p>Avg Completion</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info"><h3>1.8h</h3><p>Session Time</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-robot"></i></div>
+                        <div class="stat-info"><h3>AI</h3><p>Predictions</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Office Manager Dashboard -->
+            <div id="office_managerDashboard" class="dashboard-section">
+                <div class="welcome-header">
+                    <h1>💼 Office Manager Dashboard</h1>
+                    <p>Registrations and payments</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-user-plus"></i></div>
+                        <div class="stat-info"><h3>45</h3><p>Pending Reg.</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info"><h3>$12.4K</h3><p>Payments</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-info"><h3>18</h3><p>Docs Queue</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-check-double"></i></div>
+                        <div class="stat-info"><h3>127</h3><p>Processed</p></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="small-stats">
-          <div class="stat">50+ Courses</div>
-          <div class="stat">1M+ Students</div>
-          <div class="stat">Trusted</div>
-        </div>
-
-        <div class="cards" style="margin-top:18px">
-          <div class="mini mini-1">UI/UX Design</div>
-          <div class="mini mini-2">Web Development</div>
-          <div class="mini mini-3">Digital Marketing</div>
-          <div class="mini mini-4">Practical Learning</div>
-        </div>
-      </div>
-
-      <div class="hero-visual">
-        <div class="visual-card">
-          <!-- lightweight decorative image (SVG) to ensure file works offline -->
-          <svg width="100%" height="220" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#06b6d4"/></linearGradient>
-            </defs>
-            <rect width="800" height="450" fill="#071028"/>
-            <g transform="translate(80,40)">
-              <circle cx="600" cy="80" r="120" fill="url(#g)" opacity="0.18"/>
-              <rect x="40" y="40" rx="14" ry="14" width="420" height="320" fill="#081225"/>
-              <g fill="#fff">
-                <text x="70" y="100" font-size="34" font-weight="700">Investing in Knowledge</text>
-                <text x="70" y="140" font-size="14" fill="#9fb3d6">Learn at your own pace — anywhere, anytime</text>
-              </g>
-              <g transform="translate(60,180)">
-                <rect x="0" y="0" width="120" height="70" rx="12" fill="#fff" opacity="0.06"/>
-                <rect x="140" y="0" width="120" height="70" rx="12" fill="#fff" opacity="0.06"/>
-                <rect x="280" y="0" width="120" height="70" rx="12" fill="#fff" opacity="0.06"/>
-              </g>
-            </g>
-          </svg>
-        </div>
-      </div>
-    </section>
-
-    <div id="featuresSec" style="color:white; margin-top:20px">
-      <h3>Browse Top Essential Career Courses</h3>
-      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-        <div style="background:#fff;padding:12px;border-radius:12px;min-width:160px">UI/UX Design</div>
-        <div style="background:#fff;padding:12px;border-radius:12px;min-width:160px">Web Development</div>
-        <div style="background:#fff;padding:12px;border-radius:12px;min-width:160px">Digital Marketing</div>
-        <div style="background:#fff;padding:12px;border-radius:12px;min-width:160px">Practical Learning</div>
-      </div>
     </div>
 
-  </div>
-
-  <!-- ---------- App (dashboards) ---------- -->
-  <div class="container" style="margin-top:22px">
-    <div class="app" id="app-shell">
-      <div class="header">
-        <div style="display:flex;align-items:center;gap:12px"><div class="logo" style="width:36px;height:36px">EL</div><div style="font-weight:700;color:#fff">Smart E-Learning</div></div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div id="currentRole" class="role-pill">Not logged in</div>
-          <button id="logoutBtn" class="btn-ghost" style="display:none;color:#fff">Logout</button>
-        </div>
-      </div>
-
-      <div class="main">
-        <aside class="sidebar">
-          <div style="font-weight:700;margin-bottom:10px">Roles / Views</div>
-          <div class="nav-list" id="roleNav">
-            <div class="nav-item" data-role="student">🎓 Student</div>
-            <div class="nav-item" data-role="instructor">👩‍🏫 Instructor</div>
-            <div class="nav-item" data-role="admin">🧑‍💼 Admin</div>
-            <div class="nav-item" data-role="course_team">📚 Course Team</div>
-            <div class="nav-item" data-role="dept_head">🏛️ Dept Head</div>
-            <div class="nav-item" data-role="data_analyst">📈 Data Analyst</div>
-            <div class="nav-item" data-role="office_manager">🏢 Office Manager</div>
-          </div>
-
-          <div style="margin-top:16px;color:#cbd5e1">Login (role-specific)</div>
-          <div class="card" id="loginCard" style="margin-top:10px;background:#fff;color:#333">
-            <div style="margin-bottom:8px"><label style="font-size:13px;color:#6b7280">Role</label>
-              <select id="loginRole" class="input" style="padding:8px;border-radius:8px;border:1px solid #e6edf3;width:100%">
-                <option value="">-- select role --</option>
-                <option value="student">Student</option>
-                <option value="instructor">Instructor</option>
-                <option value="admin">Admin</option>
-                <option value="course_team">Course Team</option>
-                <option value="dept_head">Dept Head</option>
-                <option value="data_analyst">Data Analyst</option>
-                <option value="office_manager">Office Manager</option>
-              </select>
-            </div>
-
-            <div style="margin-bottom:8px">
-              <label style="font-size:13px;color:#6b7280">Email</label>
-              <input id="loginEmail" class="input" placeholder="student@demo" value="student@demo" style="padding:8px;border-radius:8px;border:1px solid #e6edf3;width:100%"/>
-            </div>
-
-            <div style="margin-bottom:10px">
-              <label style="font-size:13px;color:#6b7280">Password</label>
-              <input id="loginPassword" type="password" class="input" placeholder="demo" value="demo" style="padding:8px;border-radius:8px;border:1px solid #e6edf3;width:100%"/>
-            </div>
-
-            <div style="display:flex;gap:8px">
-              <button id="loginBtn" class="btn-cta" style="flex:1">Login</button>
-              <button id="demoBtn" class="btn-ghost" style="width:78px;color:#fff;border:1px solid rgba(255,255,255,0.06)">Demo</button>
-            </div>
-            <div style="font-size:12px;color:#6b7280;margin-top:8px">Tip: use any <code>@demo</code> email with password <strong>demo</strong>.</div>
-          </div>
-        </aside>
-
-        <section class="content">
-          <!-- Student -->
-          <div class="view" id="student" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Student Dashboard</div><div style="color:rgba(255,255,255,0.85)">Enrolled courses & progress</div></div>
-              <div style="width:280px"><input id="studentSearch" class="search" placeholder="Search courses..." /></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">My Courses</div><div class="metric" id="stuCoursesCount">0</div><div class="muted">Active courses</div></div>
-              <div class="card"><div class="title">Certificates</div><div class="metric" id="stuCertificates">0</div><div class="muted">Earned</div></div>
-              <div class="card"><div class="title">Progress</div><div class="chart-wrap"><canvas id="stuChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">Enrolled Courses</div>
-              <div class="table-wrap"><table id="stuTable"><thead><tr><th>Course</th><th>Instructor</th><th>Status</th><th>Progress</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-          <!-- Instructor -->
-          <div class="view" id="instructor" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Instructor Dashboard</div><div style="color:rgba(255,255,255,0.85)">Manage courses & students</div></div>
-              <div><button id="newCourseBtn" class="btn-cta">+ New Course</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Active Courses</div><div class="metric" id="instrActiveCourses">0</div><div class="muted">You teach</div></div>
-              <div class="card"><div class="title">Total Students</div><div class="metric" id="instrTotalStudents">0</div><div class="muted">Across courses</div></div>
-              <div class="card"><div class="title">Avg Scores</div><div class="chart-wrap"><canvas id="instrChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">My Courses</div>
-              <div class="table-wrap"><table id="instrTable"><thead><tr><th>Course</th><th>Category</th><th>Enrolled</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-          <!-- Admin -->
-          <div class="view" id="admin" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Admin Dashboard</div><div style="color:rgba(255,255,255,0.85)">Platform management</div></div>
-              <div style="display:flex;gap:8px"><button id="addUserBtn" class="btn-cta">+ Add User</button><button id="exportUsersBtn" class="btn-ghost" style="color:#fff">Export</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Total Users</div><div class="metric" id="totalUsers">0</div><div class="muted">All roles</div></div>
-              <div class="card"><div class="title">Courses</div><div class="metric" id="totalCourses">0</div><div class="muted">Active</div></div>
-              <div class="card"><div class="title">AI Growth</div><div class="chart-wrap"><canvas id="adminChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">System Users</div>
-              <div class="table-wrap"><table id="adminUsersTable"><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-          <!-- Course Team -->
-          <div class="view" id="course_team" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Course Management Team</div><div style="color:rgba(255,255,255,0.85)">Approve & categorize</div></div>
-              <div><button id="refreshCourses" class="btn-ghost" style="color:#fff">Refresh</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Pending</div><div class="metric" id="pendingCount">0</div><div class="muted">Awaiting approval</div></div>
-              <div class="card"><div class="title">Under Review</div><div class="metric" id="underReviewCount">0</div><div class="muted">Quality checks</div></div>
-              <div class="card"><div class="title">Category Distribution</div><div class="chart-wrap"><canvas id="courseCatChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">Pending Submissions</div>
-              <div class="table-wrap"><table id="courseTeamTable"><thead><tr><th>Title</th><th>Instructor</th><th>Submitted</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-          <!-- Dept Head -->
-          <div class="view" id="dept_head" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Department Head</div><div style="color:rgba(255,255,255,0.85)">KPIs & budgets</div></div>
-              <div><button class="btn-cta">Request Budget</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Faculty Count</div><div class="metric" id="facultyCount">0</div><div class="muted">Active faculty</div></div>
-              <div class="card"><div class="title">Active Projects</div><div class="metric" id="activeProjects">0</div><div class="muted">Ongoing</div></div>
-              <div class="card"><div class="title">Budget vs Spend</div><div class="chart-wrap"><canvas id="budgetChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">Faculty Performance</div>
-              <div class="table-wrap"><table id="facultyTable"><thead><tr><th>Name</th><th>Courses</th><th>Avg Rating</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-          <!-- Data Analyst -->
-          <div class="view" id="data_analyst" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Data Analyst</div><div style="color:rgba(255,255,255,0.85)">Analytics & AI insights</div></div>
-              <div><button id="genAiReport" class="btn-cta">Generate AI</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Active Learners</div><div class="metric" id="activeLearners">0</div><div class="muted">Last 30 days</div></div>
-              <div class="card"><div class="title">Avg Completion</div><div class="metric" id="avgCompletion">0%</div><div class="muted">Platform avg</div></div>
-              <div class="card"><div class="title">Engagement (7d)</div><div class="chart-wrap"><canvas id="engageChart"></canvas></div></div>
-            </div>
-
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center"><div class="title">AI Generated Insights</div><div><button id="exportInsights" class="btn-ghost" style="color:#fff">Export</button></div></div>
-              <div id="insightsArea" style="margin-top:12px"></div>
-            </div>
-          </div>
-
-          <!-- Office Manager -->
-          <div class="view" id="office_manager" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#fff">
-              <div><div style="font-size:20px;font-weight:800">Office Manager</div><div style="color:rgba(255,255,255,0.85)">Payments & registrations</div></div>
-              <div><button id="processAll" class="btn-cta">Process All</button></div>
-            </div>
-
-            <div class="dashboard-grid">
-              <div class="card"><div class="title">Registrations</div><div class="metric" id="pendingRegs">0</div><div class="muted">Pending</div></div>
-              <div class="card"><div class="title">Payments</div><div class="metric" id="paymentsReceived">$0</div><div class="muted">This month</div></div>
-              <div class="card"><div class="title">Docs Queue</div><div class="metric" id="docsQueue">0</div><div class="muted">Pending</div></div>
-            </div>
-
-            <div class="card">
-              <div class="title">Recent Registrations</div>
-              <div class="table-wrap"><table id="regTable"><thead><tr><th>Name</th><th>Course</th><th>Date</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-          </div>
-
-        </section>
-      </div>
-    </div>
-  </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-
-  /* ---------- Demo data & constants ---------- */
-  const DEMO_USERS = [
-    { email:'student@demo', password:'demo', role:'student', name:'Student Demo' },
-    { email:'instructor@demo', password:'demo', role:'instructor', name:'Instructor Demo' },
-    { email:'admin@demo', password:'demo', role:'admin', name:'Admin Demo' },
-    { email:'course@demo', password:'demo', role:'course_team', name:'Course Team' },
-    { email:'head@demo', password:'demo', role:'dept_head', name:'Dept Head' },
-    { email:'analyst@demo', password:'demo', role:'data_analyst', name:'Data Analyst' },
-    { email:'office@demo', password:'demo', role:'office_manager', name:'Office Manager' }
-  ];
-
-  const ROLE_LABEL = {
-    student:'Student', instructor:'Instructor', admin:'Admin',
-    course_team:'Course Team', dept_head:'Dept Head', data_analyst:'Data Analyst', office_manager:'Office Manager'
-  };
-
-  const KEY_SESSION = 'el_single_full_session_v1';
-
-  // Sample platform dataset
-  const DATA = {
-    users: [{name:'John Doe', role:'instructor', email:'john@example.com'}],
-    courses: [
-      {title:'AI Basics', instructor:'Dr. Rahman', enrolled:120, category:'AI', status:'Ongoing'},
-      {title:'Database Systems', instructor:'Ms. Nipa', enrolled:80, category:'DB', status:'Completed'},
-      {title:'Web Development', instructor:'Mr. Karim', enrolled:65, category:'IT', status:'Ongoing'}
-    ],
-    pendingSubmissions: [
-      {title:'Advanced SQL', instructor:'Ms. Nipa', submitted:'3 days'},
-      {title:'Deep Learning Intro', instructor:'Dr. Rahman', submitted:'1 day'}
-    ],
-    faculty: [
-      {name:'Dr. Rahman', courses:4, rating:4.5},
-      {name:'Ms. Nipa', courses:3, rating:4.7}
-    ],
-    registrations: [
-      {name:'Ali H.', course:'Web Dev', date:'2025-10-20'},
-      {name:'Fatima R.', course:'AI Basics', date:'2025-11-02'}
-    ],
-    analytics: { usersOverTime:[150,180,220,290,350], engagement7d:[300,420,380,450,500,470,430] }
-  };
-
-  /* ---------- Elements ---------- */
-  const loginRole = document.getElementById('loginRole');
-  const loginEmail = document.getElementById('loginEmail');
-  const loginPassword = document.getElementById('loginPassword');
-  const loginBtn = document.getElementById('loginBtn');
-  const demoBtn = document.getElementById('demoBtn');
-  const tryDemoTopBtn = document.getElementById('tryDemoTopBtn');
-  const getStartedBtn = document.getElementById('getStartedBtn');
-  const currentRoleEl = document.getElementById('currentRole');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const roleNav = document.getElementById('roleNav');
-  const views = Array.from(document.querySelectorAll('.view'));
-  const charts = {};
-
-  /* ---------- Session helpers ---------- */
-  function saveSession(s){ sessionStorage.setItem(KEY_SESSION, JSON.stringify(s)); }
-  function getSession(){ const t = sessionStorage.getItem(KEY_SESSION); return t ? JSON.parse(t) : null; }
-  function clearSession(){ sessionStorage.removeItem(KEY_SESSION); }
-
-  /* ---------- Show view ---------- */
-  function showView(role){
-    const session = getSession();
-    if(!role){
-      // hide all views, show login card
-      views.forEach(v=>v.style.display='none');
-      currentRoleEl.textContent = 'Not logged in';
-      logoutBtn.style.display = 'none';
-      document.getElementById('loginCard').style.display = 'block';
-      return;
-    }
-    if(!session || session.role !== role){
-      alert('Access denied: log in with role "' + role + '" first.');
-      return;
-    }
-    // toggle nav active
-    Array.from(roleNav.children).forEach(it => it.classList.toggle('active', it.dataset.role === role));
-    // show selected view
-    views.forEach(v => v.style.display = (v.id === role ? 'block' : 'none'));
-    currentRoleEl.textContent = session.name + ' · ' + (ROLE_LABEL[role] || role);
-    logoutBtn.style.display = 'inline-block';
-    document.getElementById('loginCard').style.display = 'none';
-
-    initChartsForRole(role);
-    renderRoleData(role);
-    window.scrollTo({top:document.getElementById('app-shell').offsetTop-20, behavior:'smooth'});
-  }
-
-  /* ---------- Robust demo login handler (fixed) ---------- */
-  loginBtn.addEventListener('click', function(){
-    const role = loginRole.value;
-    const email = (loginEmail.value || '').trim().toLowerCase();
-    const pwd = loginPassword.value || '';
-
-    if(!role){ alert('Please select a role.'); return; }
-
-    // 1) exact match in demo users
-    let user = DEMO_USERS.find(u => u.email === email && u.password === pwd && u.role === role);
-
-    // 2) allow any *@demo with pwd 'demo' (convenient for testing)
-    if(!user){
-      if(pwd === 'demo' && email.endsWith('@demo')){
-        user = { email, password:pwd, role, name: email.split('@')[0] || 'Demo User' };
-      }
-    }
-
-    if(!user){
-      alert('Invalid demo credentials for selected role. Use e.g. admin@demo / demo');
-      return;
-    }
-
-    // create session and save
-    const session = { email: user.email, role: user.role, name: user.name, issuedAt: Date.now() };
-    saveSession(session);
-
-    showView(user.role);
-  });
-
-  demoBtn.addEventListener('click', function(){ loginRole.value = 'student'; loginEmail.value='student@demo'; loginPassword.value='demo'; loginBtn.click(); });
-  tryDemoTopBtn.addEventListener('click', ()=>{ loginRole.value='student'; loginEmail.value='student@demo'; loginPassword.value='demo'; loginBtn.click(); });
-  getStartedBtn.addEventListener('click', ()=>{ document.getElementById('app-shell').scrollIntoView({behavior:'smooth'}); });
-
-  logoutBtn.addEventListener('click', function(){ if(confirm('Logout?')){ clearSession(); showView(null); } });
-
-  // clicking sidebar role tries to open that role but blocked if session role mismatches
-  Array.from(roleNav.children).forEach(item=>{
-    item.addEventListener('click', () => {
-      const selectedRole = item.dataset.role;
-      const session = getSession();
-      if(!session){ alert('Please login first.'); return; }
-      if(session.role !== selectedRole){ alert('Permission denied — you are logged in as ' + session.role); return; }
-      showView(selectedRole);
-    });
-  });
-
-  /* ---------- Chart initialization (lazy) ---------- */
-  function initChartsForRole(role){
-    if(!role) return;
-    try {
-      if(role === 'student'){
-        if(!charts.stu){
-          const ctx = document.getElementById('stuChart').getContext('2d');
-          charts.stu = new Chart(ctx, { type:'doughnut', data:{ labels:['Completed','In Progress','Not Started'], datasets:[{ data:[35,50,15], backgroundColor:['#10b981','#06b6d4','#c7d2fe'] }] }, options:{ maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} } });
-        } else charts.stu.update();
-      }
-
-      if(role === 'instructor'){
-        if(!charts.instr){
-          const ctx = document.getElementById('instrChart').getContext('2d');
-          charts.instr = new Chart(ctx, { type:'bar', data:{ labels: DATA.courses.map(c=>c.title), datasets:[{ label:'Enrolled', data: DATA.courses.map(c=>c.enrolled), backgroundColor:'#7c3aed' }]}, options:{ maintainAspectRatio:false } });
-        } else charts.instr.update();
-      }
-
-      if(role === 'admin'){
-        if(!charts.admin){
-          const ctx = document.getElementById('adminChart').getContext('2d');
-          charts.admin = new Chart(ctx, { type:'line', data:{ labels:['Jan','Feb','Mar','Apr','May'], datasets:[{ label:'Users', data: DATA.analytics.usersOverTime, borderColor:'#06b6d4', tension:0.3 }] }, options:{ maintainAspectRatio:false } });
-        } else charts.admin.update();
-      }
-
-      if(role === 'course_team'){
-        if(!charts.courseCat){
-          const ctx = document.getElementById('courseCatChart').getContext('2d');
-          const counts = {}; DATA.courses.forEach(c => counts[c.category] = (counts[c.category]||0)+1 );
-          charts.courseCat = new Chart(ctx, { type:'pie', data:{ labels:Object.keys(counts), datasets:[{ data:Object.values(counts), backgroundColor:['#7c3aed','#06b6d4','#f59e0b','#ef4444'] }] }, options:{ maintainAspectRatio:false }});
-        } else charts.courseCat.update();
-      }
-
-      if(role === 'dept_head'){
-        if(!charts.budget){
-          const ctx = document.getElementById('budgetChart').getContext('2d');
-          charts.budget = new Chart(ctx, { type:'bar', data:{ labels:['Q1','Q2','Q3','Q4'], datasets:[{ label:'Budget', data:[50,60,55,70], backgroundColor:'#7c3aed' },{ label:'Spend', data:[45,50,40,65], backgroundColor:'#06b6d4' }] }, options:{ maintainAspectRatio:false } });
-        } else charts.budget.update();
-      }
-
-      if(role === 'data_analyst'){
-        if(!charts.engage){
-          const ctx = document.getElementById('engageChart').getContext('2d');
-          charts.engage = new Chart(ctx, { type:'line', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ label:'Active', data: DATA.analytics.engagement7d, borderColor:'#7c3aed', fill:false }] }, options:{ maintainAspectRatio:false } });
-        } else charts.engage.update();
-      }
-    } catch(e){ console.warn('Chart init error', e); }
-  }
-
-  /* ---------- Render role-specific content ---------- */
-  function renderRoleData(role){
-    if(role === 'student'){
-      const studentCourses = DATA.courses.map(c => ({ title:c.title, instructor:c.instructor, status:c.status, progress: Math.floor(Math.random()*80)+10 }));
-      document.getElementById('stuCoursesCount').textContent = studentCourses.length;
-      document.getElementById('stuCertificates').textContent = Math.floor(Math.random()*3);
-      const tbody = document.querySelector('#stuTable tbody');
-      tbody.innerHTML = studentCourses.map(s => `<tr><td>${s.title}</td><td>${s.instructor}</td><td>${s.status}</td><td>${s.progress}%</td></tr>`).join('');
-      initChartsForRole('student');
-    }
-
-    if(role === 'instructor'){
-      const instrCourses = DATA.courses.slice(0,2);
-      document.getElementById('instrActiveCourses').textContent = instrCourses.length;
-      document.getElementById('instrTotalStudents').textContent = instrCourses.reduce((a,b)=>a+b.enrolled,0);
-      document.querySelector('#instrTable tbody').innerHTML = instrCourses.map(c => `<tr><td>${c.title}</td><td>${c.category}</td><td>${c.enrolled}</td><td><button class="action-btn" data-action="edit">Edit</button> <button class="action-btn" data-action="delete">Delete</button></td></tr>`).join('');
-      initChartsForRole('instructor');
-    }
-
-    if(role === 'admin'){
-      document.getElementById('totalUsers').textContent = DEMO_USERS.length + DATA.users.length;
-      document.getElementById('totalCourses').textContent = DATA.courses.length;
-      const tbody = document.querySelector('#adminUsersTable tbody');
-      const all = DEMO_USERS.map(u=>({name:u.name, role:u.role, email:u.email})).concat(DATA.users);
-      tbody.innerHTML = all.map(u=>`<tr><td>${u.name}</td><td>${u.role}</td><td>${u.email}</td><td><button class="action-btn" data-action="delete">Delete</button></td></tr>`).join('');
-      initChartsForRole('admin');
-    }
-
-    if(role === 'course_team'){
-      document.getElementById('pendingCount').textContent = DATA.pendingSubmissions.length;
-      document.getElementById('underReviewCount').textContent = Math.max(0, DATA.pendingSubmissions.length-1);
-      document.querySelector('#courseTeamTable tbody').innerHTML = DATA.pendingSubmissions.map(p => `<tr><td>${p.title}</td><td>${p.instructor}</td><td>${p.submitted}</td><td><button class="action-btn" data-action="approve">Approve</button> <button class="action-btn" data-action="reject">Reject</button></td></tr>`).join('');
-      initChartsForRole('course_team');
-    }
-
-    if(role === 'dept_head'){
-      document.getElementById('facultyCount').textContent = DATA.faculty.length;
-      document.getElementById('activeProjects').textContent = 7;
-      document.querySelector('#facultyTable tbody').innerHTML = DATA.faculty.map(f => `<tr><td>${f.name}</td><td>${f.courses}</td><td>${f.rating}</td><td><button class="action-btn" data-action="edit">View</button></td></tr>`).join('');
-      initChartsForRole('dept_head');
-    }
-
-    if(role === 'data_analyst'){
-      document.getElementById('activeLearners').textContent = 2430;
-      document.getElementById('avgCompletion').textContent = '72%';
-      initChartsForRole('data_analyst');
-    }
-
-    if(role === 'office_manager'){
-      document.getElementById('pendingRegs').textContent = DATA.registrations.length;
-      document.getElementById('paymentsReceived').textContent = '$12,450';
-      document.getElementById('docsQueue').textContent = 9;
-      document.querySelector('#regTable tbody').innerHTML = DATA.registrations.map(r => `<tr><td>${r.name}</td><td>${r.course}</td><td>${r.date}</td><td><button class="action-btn" data-action="approve">Approve</button></td></tr>`).join('');
-    }
-  }
-
-  /* ---------- Generic table actions ---------- */
-  document.addEventListener('click', function(e){
-    const t = e.target;
-    if(!t) return;
-    const action = t.dataset.action;
-    if(!action) return;
-    if(action === 'approve'){ t.textContent='Approved'; t.disabled=true; t.style.opacity = 0.85; }
-    if(action === 'reject'){ t.textContent='Rejected'; t.disabled=true; t.style.opacity = 0.85; }
-    if(action === 'delete'){ const row = t.closest('tr'); if(row && confirm('Delete this row?')) row.remove(); }
-    if(action === 'edit'){ const row = t.closest('tr'); if(!row) return; const first= row.cells[0]; const val=prompt('Edit value', first.textContent); if(val!==null) first.textContent=val; }
-  });
-
-  /* ---------- Admin utilities ---------- */
-  document.getElementById('addUserBtn')?.addEventListener('click', function(){
-    const name = prompt('User name:'); if(!name) return;
-    const role = prompt('Role (student,instructor,admin,course_team,dept_head,data_analyst,office_manager):'); if(!role) return;
-    const email = prompt('Email:'); if(!email) return;
-    DATA.users.push({name, role, email});
-    const s = getSession(); if(s && s.role === 'admin') renderRoleData('admin');
-    alert('User added (demo).');
-  });
-
-  document.getElementById('exportUsersBtn')?.addEventListener('click', function(){
-    const all = DEMO_USERS.map(u=>({name:u.name,role:u.role,email:u.email})).concat(DATA.users);
-    const csv = [['Name','Role','Email']].concat(all.map(u=>[u.name,u.role,u.email]));
-    const csvText = csv.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const blob = new Blob([csvText], {type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='users.csv'; a.click(); URL.revokeObjectURL(url);
-  });
-
-  /* ---------- Course team/admin actions ---------- */
-  document.getElementById('refreshCourses')?.addEventListener('click', function(){ alert('Refreshed (demo).'); });
-
-  /* ---------- Data analyst actions ---------- */
-  document.getElementById('genAiReport')?.addEventListener('click', function(){
-    const area = document.getElementById('insightsArea'); area.innerHTML='';
-    const card = document.createElement('div'); card.className='card'; card.innerHTML = `<div style="font-weight:800;margin-bottom:8px">AI Insight · ${new Date().toLocaleString()}</div><p>Learners in AI track show better completion. Recommend micro-courses.</p>`;
-    area.appendChild(card);
-  });
-  document.getElementById('exportInsights')?.addEventListener('click', function(){
-    const text = document.getElementById('insightsArea').innerText || 'No insights.';
-    const blob = new Blob([text], {type:'text/plain'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='insights.txt'; a.click(); URL.revokeObjectURL(url);
-  });
-
-  /* ---------- Instructor actions ---------- */
-  document.getElementById('newCourseBtn')?.addEventListener('click', function(){
-    const title = prompt('Course title:'); if(!title) return;
-    const cat = prompt('Category:','IT'); const instr = prompt('Instructor name:','You'); const enrolled = parseInt(prompt('Initial enrolled:','0'))||0;
-    DATA.courses.push({title, instructor:instr, enrolled, category:cat, status:'Draft'});
-    const s = getSession(); if(s && s.role === 'instructor') renderRoleData('instructor');
-    alert('Course added (demo).');
-  });
-
-  /* ---------- Office manager ---------- */
-  document.getElementById('processAll')?.addEventListener('click', function(){
-    if(confirm('Process all pending registrations?')){ DATA.registrations=[]; const s=getSession(); if(s && s.role==='office_manager') renderRoleData('office_manager'); alert('Processed (demo).'); }
-  });
-
-  /* ---------- Student search ---------- */
-  document.getElementById('studentSearch')?.addEventListener('input', function(){
-    const q = this.value.trim().toLowerCase();
-    document.querySelectorAll('#stuTable tbody tr').forEach(r => r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none');
-  });
-
-  /* ---------- Session restore on load ---------- */
-  (function restore(){
-    const s = getSession();
-    if(s && s.role){ showView(s.role); }
-    else showView(null);
-  })();
-
-}); // DOMContentLoaded end
-</script>
+    <script>
+        const USERS = {
+            'student@demo': { password: 'demo', role: 'student', name: 'John Doe' },
+            'instructor@demo': { password: 'demo', role: 'instructor', name: 'Jane Smith' },
+            'admin@demo': { password: 'demo', role: 'admin', name: 'Admin User' },
+            'course@demo': { password: 'demo', role: 'course_team', name: 'Course Manager' },
+            'head@demo': { password: 'demo', role: 'dept_head', name: 'Department Head' },
+            'analyst@demo': { password: 'demo', role: 'data_analyst', name: 'Data Analyst' },
+            'office@demo': { password: 'demo', role: 'office_manager', name: 'Office Manager' }
+        };
+
+        let selectedRole = '';
+        let currentUser = null;
+
+        // Role card selection
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedRole = this.dataset.role;
+            });
+        });
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!selectedRole) {
+                alert('Please select a role');
+                return;
+            }
+
+            if (USERS[email] && USERS[email].password === password) {
+                if (USERS[email].role !== selectedRole) {
+                    alert('Invalid role selected for this account');
+                    return;
+                }
+
+                currentUser = USERS[email];
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showDashboard();
+            } else {
+                alert('Invalid credentials. Try: student@demo / demo');
+            }
+        });
+
+        // Show dashboard
+        function showDashboard() {
+            console.log('showDashboard called');
+            console.log('Current user:', currentUser);
+            
+            // Hide login
+            const loginPage = document.getElementById('loginPage');
+            loginPage.classList.add('hidden');
+            console.log('Login page hidden');
+            
+            // Show app
+            const appContainer = document.getElementById('appContainer');
+            appContainer.classList.add('show');
+            console.log('App container shown');
+
+            // Update nav
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = getRoleLabel(currentUser.role);
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            console.log('Nav updated');
+
+            // Show correct dashboard
+            const dashboardId = currentUser.role + 'Dashboard';
+            console.log('Looking for dashboard:', dashboardId);
+            
+            const dashboard = document.getElementById(dashboardId);
+            if (dashboard) {
+                dashboard.classList.add('active');
+                console.log('Dashboard activated:', dashboardId);
+            } else {
+                console.error('Dashboard not found:', dashboardId);
+            }
+
+            // Init charts if student
+            if (currentUser.role === 'student') {
+                setTimeout(initStudentCharts, 100);
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Get role label
+        function getRoleLabel(role) {
+            const labels = {
+                'student': 'Student',
+                'instructor': 'Instructor',
+                'admin': 'Administrator',
+                'course_team': 'Course Team',
+                'dept_head': 'Department Head',
+                'data_analyst': 'Data Analyst',
+                'office_manager': 'Office Manager'
+            };
+            return labels[role] || role;
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Logout?')) {
+                sessionStorage.removeItem('currentUser');
+                location.reload();
+            }
+        });
+
+        // Check existing session
+        window.addEventListener('load', function() {
+            const saved = sessionStorage.getItem('currentUser');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                selectedRole = currentUser.role;
+                showDashboard();
+            }
+        });
+
+        // Init student charts
+        function initStudentCharts() {
+            try {
+                // Progress chart
+                const ctx1 = document.getElementById('studentChart1');
+                if (ctx1) {
+                    new Chart(ctx1.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Completed', 'In Progress', 'Not Started'],
+                            datasets: [{
+                                data: [5, 3, 2],
+                                backgroundColor: ['#48bb78', '#ed8936', '#e2e8f0'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+
+                // Performance chart
+                const ctx2 = document.getElementById('studentChart2');
+                if (ctx2) {
+                    new Chart(ctx2.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                            datasets: [{
+                                label: 'Score',
+                                data: [72, 75, 78, 82, 85],
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, max: 100 } }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Chart error:', e);
+            }
+        }
+    </script>
 </body>
 </html>
